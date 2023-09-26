@@ -44,8 +44,8 @@ jobs:
                 "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
               | jq -r '.body')
 
-            WHATS_NEW=$(echo "$RELEASE_DESCRIPTION" | sed -e '/^### Features$/d' -e 's/\[[^]]*\]([^)]*)//g' -e 's/()//g'
-            
+            WHATS_NEW=$(echo "$RELEASE_DESCRIPTION" | sed -e '/^### Features$/d' -e 's/\[[^]]*\]([^)]*)//g' -e 's/()//g')
+
           fi
 
           # if [ "${{ github.event_name }}" == "repository_dispatch" ] && [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
