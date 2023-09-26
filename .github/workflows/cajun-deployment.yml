@@ -1,8 +1,15 @@
-name: RELEASE
+name: DEPLOYMENT
 
 on:
   repository_dispatch:
     types: ["cajun"]
+    inputs:
+      version:
+        description: 'Application version'
+        required: true
+      parent_event:
+        description: 'Parent event'
+        required: true
   push:
     paths:
       - ".github/workflows/cajun-deployment.yml"
@@ -20,6 +27,40 @@ jobs:
           repository: jamesmilord/cajun
           ref: main
           ssh-key: ${{ secrets.CAJUN_DEPLOY_KEY }}
+
+      - name: Get Change log
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ] && [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
+            # retrieve from PR description
+            # Get the PR description using GitHub API
+            PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+                          | jq -r '.body')
+
+
+            # Extract "What is new" bullet points using regular expressions
+            WHATS_NEW=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What is new' | sed -n '/### What is new/,$p' | sed '/###/d' | sed '/^[[:space:]]*-[[:space:]]*\[[ x]\]/!d; s/^[[:space:]]*-[[:space:]]*\[[ x]\]//')
+          else
+            # retrieve from latest Release description
+            # Get the PR description using GitHub API
+            RELEASE_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+                          | jq -r '.body')
+
+            WHATS_NEW=$(echo "$RELEASE_DESCRIPTION" | sed -e '/^### Features$/d' -e 's/\[[^]]*\]([^)]*)//g' -e 's/()//g'
+          fi
+
+          # Set the extracted content in an environment variable with "\n" separator
+
+          echo "WHATS_NEW<<EOF" >> $GITHUB_ENV
+          echo "$WHATS_NEW" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Display WHATS_NEW Content
+        run: |
+          echo "Extracted 'What is new': ${{ env.WHATS_NEW }}"
 
       - uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -40,6 +81,19 @@ jobs:
           bundler-cache: true
           working-directory: 'ios'
 
+      - name: Set App version
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            APP_VERSION="${{ github.event.client_payload.version }}"
+          else
+            APP_VERSION="current"
+          fi
+          echo "APP_VERSION=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Display App version
+        run: |
+          echo "Extracted 'App version': ${{ env.APP_VERSION }}"
+
       - name: Deploy iOS Beta to TestFlight via Fastlane
         uses: maierj/fastlane-action@v3.0.0
         with:
@@ -59,3 +113,7 @@ jobs:
           GIT_CERTS_URL: ${{ secrets.GIT_CERTS_URL }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          APP_VERSION: ${{ env.APP_VERSION }}
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          PULL_REQUEST_BRANCH_NAME: ${{ github.head_ref }}
+          WHATS_NEW: ${{ env.WHATS_NEW }}
