@@ -30,7 +30,7 @@ jobs:
 
       - name: Get Change log
         run: |
-          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+          if [ "${{ github.event_name }}" == "repository_dispatch" ] && [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
             VERSION="${{ github.event.client_payload.version }}"
           else
             VERSION="current"
