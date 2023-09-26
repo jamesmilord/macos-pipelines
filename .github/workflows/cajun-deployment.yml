@@ -31,7 +31,7 @@ jobs:
       - name: Get Change log
         run: |
           if [ "${{ github.event_name }}" == "repository_dispatch" ] && [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
-            # Get the PR description using GitHub API
+            #Get the PR description using GitHub API
             PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
                 "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
