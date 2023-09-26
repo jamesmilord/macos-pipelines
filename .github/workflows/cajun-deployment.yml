@@ -36,7 +36,7 @@ jobs:
             # Get the PR description using GitHub API
             PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GIT_AUTHORIZATION }}" \
                 -H "Accept: application/vnd.github.v3+json" \
-                "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+                "https://api.github.com/repos/${{ github.actor }}/cajun/pulls/${{ github.event.pull_request.number }}" \
               | jq -r '.body')
 
             WHATS_NEW=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What is new' | sed -n '/### What is new/,$p' | sed '/###/d' | sed '/^[[:space:]]*-[[:space:]]*\[[ x]\]/!d; s/^[[:space:]]*-[[:space:]]*\[[ x]\]//')
@@ -48,7 +48,7 @@ jobs:
             # Get the Release description using GitHub API
             RELEASE_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GIT_AUTHORIZATION }}" \
                                   -H "Accept: application/vnd.github.v3+json" \
-                                  "https://api.github.com/repos/${{ github.repository }}/releases/latest" \
+                                  "https://api.github.com/repos/${{ github.actor }}/cajun/releases/latest" \
                                 | jq -r '.body')
 
             echo "this here $RELEASE_DESCRIPTION"
