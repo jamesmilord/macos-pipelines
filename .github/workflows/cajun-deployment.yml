@@ -45,11 +45,11 @@ jobs:
             echo "holla"
             # retrieve from latest Release description
 
-            CODE=`curl --write-out '%{http_code}' \
+            CODE=(curl --write-out '%{http_code}' \
               --silent \
               --output /dev/null \
               -H 'Accept: application/vnd.github.v3+json}' \
-              --url 'https://api.github.com/repos/${{ github.actor }}/cajun/releases/latest'
+              --url 'https://api.github.com/repos/${{ github.actor }}/cajun/releases/latest')
 
             echo " code $CODE"
 
