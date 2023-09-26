@@ -31,17 +31,21 @@ jobs:
       - name: Get Change log
         run: |
           if [ "${{ github.event_name }}" == "repository_dispatch" ] && [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
-            VERSION="${{ github.event.client_payload.version }}"
+            # Get the PR description using GitHub API
+            PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+              | jq -r '.body')
           else
             VERSION="current"
           fi
           # if [ "${{ github.event_name }}" == "repository_dispatch" ] && [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
           #   # retrieve from PR description
-          #   # Get the PR description using GitHub API
-          #   # PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          #   #                 -H "Accept: application/vnd.github.v3+json" \
-          #   #                 "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
-          #   #               | jq -r '.body')
+            Get the PR description using GitHub API
+            # PR_DESCRIPTION=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            #                 -H "Accept: application/vnd.github.v3+json" \
+            #                 "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+            #               | jq -r '.body')
 
 
           #   # # Extract "What is new" bullet points using regular expressions
