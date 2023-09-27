@@ -116,6 +116,8 @@ jobs:
       - name: Display App version, Pull request URL, Pull request branch name
         run: |
           echo "Extracted 'App version': ${{ env.APP_VERSION }}"
+          echo "Extracted 'Pull request url': ${{ env.PULL_REQUEST_URL }}"
+          echo "Extracted 'Pull request branch name': ${{ env.PULL_REQUEST_BRANCH_NAME }}"
 
       - name: Deploy iOS Beta to TestFlight via Fastlane
         uses: maierj/fastlane-action@v3.0.0
