@@ -28,6 +28,9 @@ jobs:
           repository: jamesmilord/cajun
           ref: test-pr-12
           ssh-key: ${{ secrets.CAJUN_DEPLOY_KEY }}
+      - name: log 
+        run: |
+          echo "GitHub Event Payload: ${{ toJson(github) }}"
 
       # - name: Get Change log
       #   run: |
