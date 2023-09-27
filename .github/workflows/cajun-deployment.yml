@@ -14,11 +14,11 @@ on:
         description: 'Pull request number'
         required: false
 
-  push:
-    paths:
-      - ".github/workflows/cajun-deployment.yml"
-    branches:
-      - main
+  # push:
+  #   paths:
+  #     - ".github/workflows/cajun-deployment.yml"
+  #   branches:
+  #     - main
 
 jobs:
  deploy_ios:
@@ -77,58 +77,58 @@ jobs:
         run: |
           echo "Extracted 'What is new': ${{ env.WHATS_NEW }}"
 
-      # - uses: webfactory/ssh-agent@v0.7.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.MATCH_REPO_KEY }}
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_REPO_KEY }}
 
-      # - name: Run Flutter tasks
-      #   uses: subosito/flutter-action@v2
-      #   with:
-      #     flutter-version: '3.13.4'
-      # - run: flutter clean
-      # - run: flutter pub get
-      # - run: flutter build ios --release --no-codesign --no-tree-shake-icons
+      - name: Run Flutter tasks
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.4'
+      - run: flutter clean
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign --no-tree-shake-icons
 
-      # - name: Install Ruby
-      #   uses: ruby/setup-ruby@v1
-      #   with:
-      #     ruby-version: '2.7'
-      #     bundler-cache: true
-      #     working-directory: 'ios'
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+          working-directory: 'ios'
 
-      # - name: Set App version
-      #   run: |
-      #     if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-      #       APP_VERSION="${{ github.event.client_payload.version }}"
-      #     else
-      #       APP_VERSION="current"
-      #     fi
-      #     echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+      - name: Set App version
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            APP_VERSION="${{ github.event.client_payload.version }}"
+          else
+            APP_VERSION="current"
+          fi
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
-      # - name: Display App version
-      #   run: |
-      #     echo "Extracted 'App version': ${{ env.APP_VERSION }}"
+      - name: Display App version
+        run: |
+          echo "Extracted 'App version': ${{ env.APP_VERSION }}"
 
-      # - name: Deploy iOS Beta to TestFlight via Fastlane
-      #   uses: maierj/fastlane-action@v3.0.0
-      #   with:
-      #     lane: beta
-      #     subdirectory: ios
-      #   env:
-      #     TEMP_KEYCHAIN_USER: ${{ secrets.TEMP_KEYCHAIN_USER }}
-      #     TEMP_KEYCHAIN_PASSWORD: ${{ secrets.TEMP_KEYCHAIN_PASSWORD }}
-      #     APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
-      #     APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-      #     APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
-      #     GIT_AUTHORIZATION: ${{ secrets.GIT_AUTHORIZATION }}
-      #     APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
-      #     APPLE_ID: ${{ secrets.APPLE_ID }}
-      #     APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
-      #     DEV_PORTAL_TEAM_ID: ${{ secrets.DEV_PORTAL_TEAM_ID }}
-      #     GIT_CERTS_URL: ${{ secrets.GIT_CERTS_URL }}
-      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-      #     MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-      #     APP_VERSION: ${{ env.APP_VERSION }}
-      #     PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
-      #     PULL_REQUEST_BRANCH_NAME: ${{ github.head_ref }}
-      #     WHATS_NEW: ${{ env.WHATS_NEW }}
+      - name: Deploy iOS Beta to TestFlight via Fastlane
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: beta
+          subdirectory: ios
+        env:
+          TEMP_KEYCHAIN_USER: ${{ secrets.TEMP_KEYCHAIN_USER }}
+          TEMP_KEYCHAIN_PASSWORD: ${{ secrets.TEMP_KEYCHAIN_PASSWORD }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
+          GIT_AUTHORIZATION: ${{ secrets.GIT_AUTHORIZATION }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APP_STORE_CONNECT_TEAM_ID: ${{ secrets.APP_STORE_CONNECT_TEAM_ID }}
+          DEV_PORTAL_TEAM_ID: ${{ secrets.DEV_PORTAL_TEAM_ID }}
+          GIT_CERTS_URL: ${{ secrets.GIT_CERTS_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          APP_VERSION: ${{ env.APP_VERSION }}
+          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
+          PULL_REQUEST_BRANCH_NAME: ${{ github.head_ref }}
+          WHATS_NEW: ${{ env.WHATS_NEW }}
