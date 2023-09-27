@@ -45,6 +45,7 @@ jobs:
                 "https://api.github.com/repos/jamesmilord/cajun/pulls/${{ github.event.client_payload.pull_request_number }}" \
               | jq -r '.body')
 
+            echo "pull request number: ${{ github.event.client_payload.pull_request_number }}"
             echo "PR_DESCRIPTION: $PR_DESCRIPTION"
 
             WHATS_NEW=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What is new' | sed -n '/### What is new/,$p' | sed '/###/d' | sed '/^[[:space:]]*-[[:space:]]*\[[ x]\]/!d; s/^[[:space:]]*-[[:space:]]*\[[ x]\]//')
