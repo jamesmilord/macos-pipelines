@@ -16,6 +16,9 @@ on:
       pull_request_number:
         description: 'Pull request number'
         required: false
+      pull_request_url:
+        description: 'Pull request URL'
+        required: false
 
 jobs:
  deploy_ios:
@@ -95,16 +98,22 @@ jobs:
           bundler-cache: true
           working-directory: 'ios'
 
-      - name: Set App version
+      - name: Set App version, Pull request URL, Pull request branch name
         run: |
           if [ "${{ github.event.client_payload.parent_event }}" == "pull_request" ]; then
             APP_VERSION="current"
+            PULL_REQUEST_URL="${{ github.event.client_payload.pull_request_url }}"
+            PULL_REQUEST_BRANCH_NAME="${{ github.event.client_payload.branch }}"
           else
             APP_VERSION="${{ github.event.client_payload.version }}"
+            PULL_REQUEST_URL="none"
+            PULL_REQUEST_BRANCH_NAME="none"
           fi
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          echo "PULL_REQUEST_URL=$PULL_REQUEST_URL" >> $GITHUB_ENV
+          echo "PULL_REQUEST_BRANCH_NAME=$PULL_REQUEST_BRANCH_NAME" >> $GITHUB_ENV
 
-      - name: Display App version
+      - name: Display App version, Pull request URL, Pull request branch name
         run: |
           echo "Extracted 'App version': ${{ env.APP_VERSION }}"
 
@@ -128,6 +137,6 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           APP_VERSION: ${{ env.APP_VERSION }}
-          PULL_REQUEST_URL: ${{ github.event.pull_request.html_url }}
-          PULL_REQUEST_BRANCH_NAME: ${{ github.head_ref }}
+          PULL_REQUEST_URL: ${{ env.PULL_REQUEST_URL }}
+          PULL_REQUEST_BRANCH_NAME: ${{ env.PULL_REQUEST_BRANCH_NAME }}
           WHATS_NEW: ${{ env.WHATS_NEW }}
