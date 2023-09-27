@@ -10,6 +10,10 @@ on:
       parent_event:
         description: 'Parent event'
         required: true
+      pull_request_number:
+        description: 'Pull request number'
+        required: false
+
   push:
     paths:
       - ".github/workflows/cajun-deployment.yml"
@@ -38,7 +42,7 @@ jobs:
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer ${{ secrets.GIT_AUTHORIZATION }}" \
                 -H "X-GitHub-Api-Version: 2022-11-28" \
-                "https://api.github.com/repos/jamesmilord/cajun/pulls/${{ github.event.pull_request.number }}" \
+                "https://api.github.com/repos/jamesmilord/cajun/pulls/${{ github.event.client_payload.pull_request_number }}" \
               | jq -r '.body')
 
             echo "PR_DESCRIPTION: $PR_DESCRIPTION"
@@ -46,7 +50,6 @@ jobs:
             WHATS_NEW=$(echo "$PR_DESCRIPTION" | grep -A999999 '### What is new' | sed -n '/### What is new/,$p' | sed '/###/d' | sed '/^[[:space:]]*-[[:space:]]*\[[ x]\]/!d; s/^[[:space:]]*-[[:space:]]*\[[ x]\]//')
 
           else
-            echo "holla"
             # retrieve from latest Release description
 
             # Get the Release description using GitHub API
