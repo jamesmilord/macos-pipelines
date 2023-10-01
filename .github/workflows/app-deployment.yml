@@ -111,7 +111,7 @@ jobs:
           if [ "${{ github.event.client_payload.flavor }}" == "none" ]; then
             flutter build ios --release --no-codesign --no-tree-shake-icons
           else
-            flutter build ios --flavor ${{ github.event.client_payload.flavor }} --release --no-codesign --no-tree-shake-icons
+            flutter build ios --flavor ${{ github.event.client_payload.flavor }} --release --no-codesign --no-tree-shake-icons -t lib/main_${{ github.event.client_payload.flavor }}
           fi
 
       - name: Install Ruby
