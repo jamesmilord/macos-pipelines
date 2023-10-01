@@ -135,22 +135,24 @@ jobs:
           echo "Extracted 'Pull request url': ${{ env.PULL_REQUEST_URL }}"
           echo "Extracted 'Pull request branch name': ${{ env.PULL_REQUEST_BRANCH_NAME }}"
 
-      - name: List directory
+      - name: List xcschemes directory before
         run: |
-          pwd
-          ls -a
+          ls ios/Runner.xcodeproj/xcshareddata/xcschemes
 
       - name: Remove Unnecessary scheme to prevent Multiple schemes found
         if: ${{ github.event.client_payload.flavor != 'none' }}
         run: | 
-          ls ios/Runner.xcodeproj/xcshareddata/xcschemes
-
           if [ "${{ github.event.client_payload.flavor }}" == "staging" ]; then
+            echo "removing prod scheme"
             rm -f ios/Runner.xcodeproj/xcshareddata/xcschemes/production.xcscheme
           else
+            echo "removing staging scheme"
             rm -f ios/Runner.xcodeproj/xcshareddata/xcschemes/staging.xcscheme
           fi
 
+
+      - name: List xcschemes directory after
+        run: |
           ls ios/Runner.xcodeproj/xcshareddata/xcschemes
 
 
