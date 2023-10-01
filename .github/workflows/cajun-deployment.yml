@@ -31,13 +31,21 @@ jobs:
     runs-on: macOS-latest
     steps:
       - name: Checkout Cajun code
-        if: ${{ steps.repo1_checkout_condition.outputs.do_repo1_checkout == 'true' }}
+        if: ${{ github.event.action == 'cajun' }}
         uses: actions/checkout@v4
         with:
           repository: jamesmilord/cajun
           ref: ${{ github.event.client_payload.branch }}
           ssh-key: ${{ secrets.CAJUN_DEPLOY_KEY }}
-          
+
+      - name: Checkout Flavors code
+        if: ${{ github.event.action == 'flavors' }}
+        uses: actions/checkout@v4
+        with:
+          repository: jamesmilord/flavors
+          ref: ${{ github.event.client_payload.branch }}
+          ssh-key: ${{ secrets.FLAVORS_DEPLOY_KEY }}
+
       - name: log 
         run: |
           echo "GitHub Event Payload: ${{ toJson(github) }}"
