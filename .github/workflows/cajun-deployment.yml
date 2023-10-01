@@ -30,15 +30,17 @@ jobs:
     name: Deploy build to TestFlight
     runs-on: macOS-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Cajun code
+        if: ${{ steps.repo1_checkout_condition.outputs.do_repo1_checkout == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: jamesmilord/cajun
           ref: ${{ github.event.client_payload.branch }}
           ssh-key: ${{ secrets.CAJUN_DEPLOY_KEY }}
-      # - name: log 
-      #   run: |
-      #     echo "GitHub Event Payload: ${{ toJson(github) }}"
+          
+      - name: log 
+        run: |
+          echo "GitHub Event Payload: ${{ toJson(github) }}"
 
       - name: Get Change log
         run: |
